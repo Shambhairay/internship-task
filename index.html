@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Spark (Scala) Integration with JSON</title>
+    <link
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css" />
+    <style>
+      /* Custom styles for the sidebar */
+      .sidebar {
+        position: fixed;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        z-index: 100;
+        padding: 48px 0 0; /* Height of navbar */
+        box-shadow: inset -1px 0 0 rgba(0, 0, 0, 0.1);
+      }
+
+      .sidebar-sticky {
+        position: relative;
+        top: 0;
+        height: calc(
+          100vh - 48px
+        ); /* Full viewport height minus navbar height */
+        padding-top: 0.5rem;
+        overflow-x: hidden;
+        overflow-y: auto; /* Scrollable contents if viewport is shorter than content */
+      }
+
+      @supports ((position: -webkit-sticky) or (position: sticky)) {
+        .sidebar-sticky {
+          position: -webkit-sticky;
+          position: sticky;
+          top: 48px; /* Height of navbar */
+        }
+      }
+
+      .sidebar .nav-link {
+        font-weight: 500;
+        color: #333;
+      }
+
+      .sidebar .nav-link:hover {
+        color: #007bff;
+      }
+
+      .sidebar .active {
+        color: #007bff;
+      }
+
+      @media (max-width: 768px) {
+        .sidebar {
+          position: fixed;
+          top: 0;
+          bottom: 0;
+          left: -100%; /* Hide the sidebar by default */
+          z-index: 100;
+          width: 250px;
+          overflow-x: hidden;
+          transition: left 0.3s ease;
+        }
+
+        .sidebar.show {
+          left: 0; /* Show the sidebar when toggled */
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container-fluid">
+      <div class="row">
+        <!-- Sidebar -->
+        <nav class="col-md-3 col-lg-2 d-none d-md-block sidebar">
+          <div class="sidebar-sticky">
+            <ul class="nav flex-column">
+              <li class="nav-item">
+                <a class="nav-link active" href="#introduction">Introduction</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="#setup">Setting Up Spark</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="#reading-json">Reading JSON Data</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="#writing-json">Writing JSON Data</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="#json-schema"
+                  >JSON Schema Inference</a
+                >
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="#nested-json">Handling Nested JSON</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="#conclusion">Conclusion</a>
+              </li>
+            </ul>
+          </div>
+        </nav>
+
+        <!-- Main content -->
+        <main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-4">
+          <h1 class="mt-4">Spark (Scala) Integration with JSON</h1>
+          <nav aria-label="Page navigation example">
+            <ul class="pagination justify-content-between">
+              <li class="page-item">
+                <a class="page-link" href="#">Previous</a>
+              </li>
+              <li class="page-item"><a class="page-link" href="#">Next</a></li>
+            </ul>
+          </nav>
+
+          <div class="content">
+            <section id="introduction">
+              <h2>Introduction</h2>
+              <p>
+                Apache Spark is a powerful tool for data processing and
+                analysis, and integrating Spark with JSON data is a common task.
+                This guide will walk you through the process of working with
+                JSON in Spark using Scala.
+              </p>
+            </section>
+            <section id="setup">
+              <h2>Setting Up Spark</h2>
+              <p>
+                Before diving into JSON handling, ensure you have Spark set up
+                in your environment. You can download it from the
+                <a
+                  href="https://spark.apache.org/downloads.html"
+                  target="_blank"
+                  >official Spark website</a
+                >.
+              </p>
+              <div class="note">
+                <strong>Note:</strong> Ensure that your Spark installation is
+                properly configured and that you have the necessary permissions
+                to read and write files in your environment.
+              </div>
+            </section>
+            <section id="reading-json">
+              <h2>Reading JSON Data</h2>
+              <p>
+                You can read JSON data in Spark using the
+                <code>spark.read.json</code> method. Here’s a basic example:
+              </p>
+              <pre><code>
+import org.apache.spark.sql.SparkSession
+
+val spark = SparkSession.builder
+  .appName("JSON Example")
+  .config("spark.master", "local")
+  .getOrCreate()
+
+val df = spark.read.json("path/to/your/json/file.json")
+df.show()
+            </code></pre>
+              <a
+                href="https://www.jdoodle.com/ia/1r5n"
+                target="_blank"
+                class="btn btn-primary"
+                >Try it Yourself</a
+              >
+            </section>
+            <section id="writing-json">
+              <h2>Writing JSON Data</h2>
+              <p>
+                To write DataFrame data to a JSON file, use the
+                <code>write.json</code> method:
+              </p>
+              <pre><code>
+df.write.json("path/to/output/json/file.json")
+            </code></pre>
+              <div class="note">
+                <strong>Note:</strong> Ensure the output directory is empty or
+                non-existent, as Spark will throw an error if the directory
+                already exists.
+              </div>
+              <a
+                href="https://www.jdoodle.com/ia/1r5n"
+                target="_blank"
+                class="btn btn-primary"
+                >Try it Yourself</a
+              >
+            </section>
+            <section id="json-schema">
+              <h2>JSON Schema Inference</h2>
+              <p>
+                Spark can infer the schema of your JSON data. However, for
+                better performance and accuracy, you can define the schema
+                explicitly:
+              </p>
+              <pre><code>
+import org.apache.spark.sql.types._
+
+val schema = StructType(Array(
+  StructField("name", StringType, true),
+  StructField("age", IntegerType, true)
+))
+
+val dfWithSchema = spark.read.schema(schema).json("path/to/your/json/file.json")
+dfWithSchema.show()
+            </code></pre>
+              <div class="note">
+                <strong>Note:</strong> Defining the schema explicitly can help
+                improve performance by reducing the time Spark spends inferring
+                the schema.
+              </div>
+              <a
+                href="https://www.jdoodle.com/ia/1r5n"
+                target="_blank"
+                class="btn btn-primary"
+                >Try it Yourself</a
+              >
+            </section>
+            <section id="nested-json">
+              <h2>Handling Nested JSON</h2>
+              <p>
+                JSON data often contains nested structures. Spark provides
+                robust support for nested data. Here’s how you can read nested
+                JSON data:
+              </p>
+              <pre><code>
+val nestedDF = spark.read.json("path/to/nested/json/file.json")
+nestedDF.printSchema()
+nestedDF.select("nestedField.subField").show()
+            </code></pre>
+              <div class="note">
+                <strong>Note:</strong> Use the <code>printSchema</code> method
+                to understand the structure of your nested JSON data.
+              </div>
+              <a
+                href="https://www.jdoodle.com/ia/1r5n"
+                target="_blank"
+                class="btn btn-primary"
+                >Try it Yourself</a
+              >
+            </section>
+            <section id="conclusion">
+              <h2>Conclusion</h2>
+              <p>
+                Integrating Spark with JSON using Scala is straightforward and
+                powerful. Whether you are reading simple or nested JSON data,
+                Spark provides the necessary tools to handle and process your
+                data efficiently. For more advanced operations and
+                optimizations, refer to the
+                <a
+                  href="https://spark.apache.org/docs/latest/sql-data-sources-json.html"
+                  target="_blank"
+                  >Spark documentation</a
+                >.
+              </p>
+            </section>
+          </div>
+          <nav aria-label="Page navigation example">
+            <ul class="pagination justify-content-between">
+              <li class="page-item">
+                <a class="page-link" href="#">Previous</a>
+              </li>
+              <li class="page-item"><a class="page-link" href="#">Next</a></li>
+            </ul>
+          </nav>
+        </main>
+      </div>
+    </div>
+  </body>
+</html>
